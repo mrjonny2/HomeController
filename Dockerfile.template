@@ -32,7 +32,7 @@ RUN sudo cp /lib/systemd/system/unifi.service /etc/systemd/system/
 
 RUN sudo sed -i '/^\[Service\]$/a Environment=JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt' /etc/systemd/system/unifi.service
 
-RUN sudo systemctl daemon-reload
+#RUN sudo systemctl daemon-reload
 
 #Use 768mb of RAM
 RUN sudo sed -i 's@-Xmx1024M@-Xmx768M@' /usr/lib/unifi/bin/unifi.init
@@ -42,7 +42,7 @@ RUN sudo useradd -r unifi
 RUN sudo chown -R unifi:unifi /var/lib/unifi /var/log/unifi /var/run/unifi /usr/lib/unifi/work
 RUN sudo sed -i '/^\[Service\]$/a User=unifi' /etc/systemd/system/unifi.service
 
-RUN sudo systemctl daemon-reload
+#RUN sudo systemctl daemon-reload
 
 #start Unifi
 CMD sudo systemctl start unifi
