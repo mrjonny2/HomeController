@@ -1,0 +1,34 @@
+FROM resin/rpi-raspbian:latest
+
+RUN sudo apt-get update && sudo apt-get upgrade
+
+RUN sudo apt-get install oracle-java8-jdk
+
+RUN echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/unifi.list
+RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv C0A52C50
+
+RUN sudo apt-get update
+RUN sudo apt-get install unifi -y
+
+#After the installation is complete, stop the unifi service, so we can start configuring it.
+RUN sudo systemctl stop unifi
+
+RUN sudo sed -i 's@^set_java_home$@#set_java_home\n\n# Use Oracle Java 8 JVM instead.\nJAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt@' /usr/lib/unifi/bin/unifi.init
+RUN sudo cp /lib/systemd/system/unifi.service /etc/systemd/system/
+
+RUN sudo sed -i '/^\[Service\]$/a Environment=JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt' /etc/systemd/system/unifi.service
+
+RUN sudo systemctl daemon-reload
+
+#Use 768mb of RAM
+RUN sudo sed -i 's@-Xmx1024M@-Xmx768M@' /usr/lib/unifi/bin/unifi.init
+
+#Create new user
+RUN sudo useradd -r unifi
+RUN sudo chown -R unifi:unifi /var/lib/unifi /var/log/unifi /var/run/unifi /usr/lib/unifi/work
+RUN sudo sed -i '/^\[Service\]$/a User=unifi' /etc/systemd/system/unifi.service
+
+RUN sudo systemctl daemon-reload
+
+#start Unifi
+CMD sudo systemctl start unifi
