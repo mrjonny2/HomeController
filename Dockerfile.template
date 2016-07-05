@@ -2,10 +2,10 @@ FROM resin/rpi-raspbian:latest
 
 RUN sudo apt-get update && sudo apt-get upgrade
 
-RUN sudo apt-get install python-software-properties
+RUN sudo apt-get install python-software-properties software-properties-common -y
 RUN sudo add-apt-repository ppa:webupd8team/java
 RUN sudo apt-get update
-RUN sudo apt-get install oracle-java8-installer
+RUN sudo apt-get install oracle-java8-installer -y
 
 RUN echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/unifi.list
 RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv C0A52C50
