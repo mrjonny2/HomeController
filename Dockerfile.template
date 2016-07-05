@@ -6,6 +6,10 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | te
 RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 RUN apt-get update
+RUN echo debconf shared/accepted-oracle-license-v1-1 select true | \
+		sudo debconf-set-selections
+RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | \
+		sudo debconf-set-selections
 RUN apt-get install oracle-java8-installer
 
 RUN echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/unifi.list
