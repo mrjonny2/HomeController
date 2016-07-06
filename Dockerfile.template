@@ -1,29 +1,48 @@
-FROM resin/raspberrypi3-node:onbuild
+# Dockerfile to build it yourself
+FROM resin/rpi-raspbian
 
-# Enable systemd
-ENV INITSYSTEM on
-
-RUN sudo apt-get update
+ENV DEBIAN_FRONTEND noninteractive
 
 #Add Java repos
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list
 RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 
-#Add mongo keys
-#RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-#RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-
 #Add unifi repos
 RUN echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/unifi.list
 RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv C0A52C50
+
+RUN apt-get update
 
 # Avoid ERROR: invoke-rc.d: policy-rc.d denied execution of start.
 RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
 RUN apt-get upgrade -y
 
-RUN apt-get update
+###############################
+# Configure timezone and locale
+###############################
+RUN echo "Europe/Amsterdam" > /etc/timezone; dpkg-reconfigure -f noninteractive tzdata
+RUN apt-get install -y locales apt-utils
+RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen
+ENV LANGUAGE en_US:en
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_US.UTF-8
+RUN update-locale LANG=en_US.UTF-8
+RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 
+###############################
+# MongoDB
+###############################
+RUN apt-get install -y mongodb-server
+
+RUN mkdir -p /data/db
+
+# Expose MongoDB ports
+EXPOSE 27017 28018
+
+# Enable systemd
+ENV INITSYSTEM on
 
 #Configure Java installer
 RUN echo "debconf shared/accepted-oracle-license-v1-1 select true" | \
@@ -31,9 +50,6 @@ RUN echo "debconf shared/accepted-oracle-license-v1-1 select true" | \
 RUN echo "debconf shared/accepted-oracle-license-v1-1 seen true" | \
 		sudo debconf-set-selections
 RUN apt-get install oracle-java8-installer
-
-#Install and configure mongodb
-RUN sudo apt-get install -y mongodb-server
 
 #Install unifi
 RUN sudo apt-get install unifi -y
@@ -61,4 +77,5 @@ RUN sudo sed -i '/^\[Service\]$/a User=unifi' /etc/systemd/system/unifi.service
 RUN sudo systemctl daemon-reload
 
 #start Unifi
-CMD sudo systemctl start unifi
+RUN sudo systemctl start unifi
+ENTRYPOINT usr/bin/mongod
