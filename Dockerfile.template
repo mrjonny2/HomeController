@@ -1,11 +1,15 @@
 FROM resin/rpi-raspbian:latest
 
-RUN sudo apt-get update && sudo apt-get upgrade
+RUN sudo apt-get update
 
 #Add Java repos
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list
 RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+
+#Add mongo keys
+RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 #Add unifi repos
 RUN echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/unifi.list
@@ -17,6 +21,7 @@ RUN apt-get upgrade -y
 
 RUN apt-get update
 
+
 #Configure Java installer
 RUN echo "debconf shared/accepted-oracle-license-v1-1 select true" | \
 		sudo debconf-set-selections
@@ -24,9 +29,13 @@ RUN echo "debconf shared/accepted-oracle-license-v1-1 seen true" | \
 		sudo debconf-set-selections
 RUN apt-get install oracle-java8-installer
 
+#Install and configure mongodb
+RUN sudo apt-get install -y mongodb-org mongodb-10gen
 
 #Install unifi
 RUN sudo apt-get install unifi -y
+
+RUN apt-get clean
 
 #After the installation is complete, stop the unifi service, so we can start configuring it.
 RUN sudo systemctl stop unifi
