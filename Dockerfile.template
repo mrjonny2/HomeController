@@ -16,7 +16,7 @@ RUN apt-get update
 
 # Avoid ERROR: invoke-rc.d: policy-rc.d denied execution of start.
 RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
-RUN apt-get upgrade -y
+#RUN apt-get upgrade -y
 
 ###############################
 # Configure timezone and locale
