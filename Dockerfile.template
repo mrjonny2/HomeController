@@ -37,8 +37,8 @@ RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 ###############################
 # MongoDB
 ###############################
-RUN apt-get install -y --no-install-recommends /
-		build-essential /
+RUN apt-get install -y --no-install-recommends \
+		build-essential \
 		mongodb
 
 RUN mkdir -p /data/db
