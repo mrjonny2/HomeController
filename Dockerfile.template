@@ -30,7 +30,7 @@ RUN echo "debconf shared/accepted-oracle-license-v1-1 seen true" | \
 RUN apt-get install oracle-java8-installer
 
 #Install and configure mongodb
-RUN sudo apt-get install -y mongodb mongodb-10gen
+RUN sudo apt-get install -y mongodb
 
 #Install unifi
 RUN sudo apt-get install unifi -y
