@@ -42,6 +42,8 @@ RUN apt-get install -y --no-install-recommends \
 		build-essential \
 		mongodb || true
 
+RUN dpkg --configure mongodb-server
+
 RUN mkdir -p /data/db
 
 # Expose MongoDB ports
