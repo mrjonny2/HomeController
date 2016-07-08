@@ -33,6 +33,7 @@ ENV LC_ALL en_US.UTF-8
 RUN locale-gen en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+RUN dpkg-reconfigure locales
 
 ###############################
 # MongoDB
