@@ -1,0 +1,15 @@
+
+body {
+	padding-top: 70px;
+}
+
+.key {
+	width: 30%;
+	min-height: 100px;
+	margin: 5px;
+	font-size: x-large;
+}
+
+.dialpad {
+	text-align: center;
+}
