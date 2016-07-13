@@ -54,7 +54,6 @@ RUN cp /lib/systemd/system/unifi.service /etc/systemd/system/
 RUN sed -i '/^\[Service\]$/a Environment=JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt' /etc/systemd/system/unifi.service
 #Create new user
 RUN sudo useradd -r unifi
-RUN sudo chown -R unifi:unifi /var/lib/unifi /var/log/unifi /var/run/unifi /usr/lib/unifi/work
 RUN sudo sed -i '/^\[Service\]$/a User=unifi' /etc/systemd/system/unifi.service
 
 COPY package.json .
