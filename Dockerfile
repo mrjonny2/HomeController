@@ -17,7 +17,7 @@ RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv C0A52C50
 
 RUN apt-get update
 
-RUN echo "Europe/Amsterdam" > /etc/timezone; dpkg-reconfigure -f noninteractive tzdata
+RUN echo "Europe/London" > /etc/timezone; dpkg-reconfigure -f noninteractive tzdata
 RUN apt-get install -y locales apt-utils
 RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen
 ENV LANGUAGE en_US:en
@@ -47,7 +47,15 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN mkdir -p /datadb
 
+
+#Unifi config
 RUN sed -i 's@^set_java_home$@#set_java_home\n\n# Use Oracle Java 8 JVM instead.\nJAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt@' /usr/lib/unifi/bin/unifi.init
+RUN cp /lib/systemd/system/unifi.service /etc/systemd/system/
+RUN sed -i '/^\[Service\]$/a Environment=JAVA_HOME=/usr/lib/jvm/jdk-8-oracle-arm-vfp-hflt' /etc/systemd/system/unifi.service
+#Create new user
+RUN sudo useradd -r unifi
+RUN sudo chown -R unifi:unifi /var/lib/unifi /var/log/unifi /var/run/unifi /usr/lib/unifi/work
+RUN sudo sed -i '/^\[Service\]$/a User=unifi' /etc/systemd/system/unifi.service
 
 COPY package.json .
 
